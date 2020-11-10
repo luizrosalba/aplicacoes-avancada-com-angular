@@ -291,4 +291,4 @@ Torna a necessidade de shared components inútil.
 - vamos fazer mvc depois melhorar depois usar redux 
 - git clone https://github.com/JGhignatti/jv-state.git 
 - vou tentar seguir ele dessa vez 
-- 
+- 13:53  
