@@ -157,3 +157,138 @@ Não dispara change detection.
 - declara e exporta os componentes shared 
 ![](12.PNG)
 
+# Parte 2  
+
+- varios eventos que disparam o change detection 
+- colocou um setInterval no navbar para ativar o change detection 
+- cuidado com o que vc coloca dentro do método get. O change detection vai ficar rerenderizando o componente se houver alguma lógica muito grande e isto não é performático. 
+- podemos bloquear a execução no change detector par um componente 
+-  Desligando o change detector no construtor 
+![](13.PNG)
+- ng oninit está sendo executado mas a view nao está sendo atualizada
+- e se queremos que ele apareça ? 
+- usamos outro lifecicle AfterView Init 
+- Removemos o componente da arvore de detecção de mudanças 
+![](14.PNG)
+- E se quisermos que o cd rode novamente ? 
+- this.cdRef.reattach;  (mas não garante que ocorra apenas uma detecção )
+- Outra forma : detectChanges () marca a view e os filhos para verificar mudanças 
+![](15.PNG)
+- podemos portanto decidir quando rodar o change detection 
+- em um componente maior ou mais de um evento isso é uma abordagem que não escala . 
+
+# Parte 3 
+- forma melhor para conseguir escalar com performance usando o change detection 
+- padrão container x presenter
+- componentes reutilizáveis 
+
+## Presenter
+- (Dumb components)
+- Se preocupam como as coisas são mostradas 
+- Recebem informação via input
+- nao guardam estado 
+- recebem informação 
+- Emitem eventos para o componente pai via Output
+- Podem ter presenters e container dentro deles 
+- podem ser mais performáticos com OnPush (change detection strategy )
+## Container 
+- Se preocupa como as coisas funcionam
+- Consomem e geram informação de serviços 
+- disparam ações com base nos eventos do componente filho 
+- tem noção de estado 
+- podem ter presenters e containers dentro deles 
+- Store centralizada 
+![](16.PNG)
+- content c será presenter
+- root content c será o container 
+- separamos em duas pastas dentro da feature , uma pasta presenter e outra content 
+- RootcontentC
+![](17.PNG)
+- contentcchild
+![](18.PNG)
+- ja podemos usar a informação dentro do child 
+![](19.PNG)
+- se usarmso o change detection
+-construimos um método dentro do c-child como o userfullname é um binding ele fica rodando sem parar 
+![](20.PNG)
+- podemos fazer que o cd nao rode para este componente 
+- nao queremos parar e voltar a fazer o cd 
+- mudamos a estratégia do componente ChangeDetectionStrategy é por default Default
+- vamos usar o OnPush
+- este componente só roda o Cd quando alguma propriedade que entra no componente via input seja modificada 
+- so quando user for mudado ele será rerenderizado (era a resposta do desafio :( ))
+- ![](21.PNG)
+- reusabilidade 
+- poderia ter text1 e outro input text 2 no c child
+- ele poderia simplesmente concatenar os dois  e o componente faria sempre isso , concatenar informações 
+- veja como o rootcontent é reutilizavel ! 
+- ![](22.PNG)
+- vamos mudar a forma como recebemos o observable user 
+- ![](23.PNG)
+- removemos o complete pois vamos mante-lo vivo 
+- mudamos o user para que se torne um observable de maneira que podemos usar sua referencia depois 
+- ![](24.PNG)
+- agora this.users retorna um observable 
+- ![](25.PNG)
+- não preciso mudar o meu input no root content. basta alterar sua uitilização 
+- ![](26.PNG)
+- podemos usar o async para que o observable seja destruido quando a view for destruida 
+- ![](27.PNG)
+- Posso agora passar novas propriedades para este objeto através de um pipe 
+ ![](28.PNG)
+- e claro posso usar esta informação no meu child 
+ ![](29.PNG)
+ - o caontainer recebe e lida com o estado 
+ - o presenter nao sabe como funciona só apresenta
+ - vamos fazer o contador nesta estrutura 
+ - criamos um counter inicializado com valor 0 dentro do root content -c 
+ - o presenter vai receber o conter via input e vai ter como output o increment e outro decrement 
+ - teremos dois botoes no child um para incrementar e outro decrementar 
+ - this.counter++ 
+ - e this.counter-- 
+ - fazemos o bind no child component 
+ ![](30.PNG)
+ ![](31.PNG)
+ - o presenter está apensa emitindo o valor nao está de fato implementando 
+ - pai injeta no filho e mostra na tela. Acontece um enveto , o filho dispara pro pai fazer o handle que vai atualizar a informação injetada 
+ - cuidado que componentes do tipo presenter nao dever modificiar o estado fazendo por exemplo this.counter++ no filho (as responsabilidades não estão separadas)
+ - 
+ O que não é comum de um componente do tipo presenter fazer?
+ Se comunicar diretamente com serviços.
+
+Considerando a estrutura abordada no vídeo, o que são páginas?
+Feature modules que são renderizados no router-outlet raiz da aplicação.
+
+Qual o ponto negativo de alterar manualmente o comportamento do change detection dentro de um componente?
+Quanto maior o componente e sua árvore de componentes filhos, mais difícil é lidar com os eventos que marcam o componente para ser verificado e que removem ele da execução.
+
+
+O que não é comum de um componente do tipo container fazer?
+Lidar com uma grande quantidade de eventos vindos de componentes filho distintos.
+
+Qual a vantagem de utilizar OnPush como estratégia de change detection?
+Faz o change detection rodar apenas quando a referência de um Input é atualizada, ótimo para componentes do tipo presenter.
+
+Qual a consequência de remover um componente da árvore de change detection?
+A view não é atualizada.
+
+Um mau gerenciamento da comunicação entre componente do tipo container e componente do tipo presenter pode acarretar em:
+Inconsistência de informação.
+
+Qual das situações a seguir pode ser considerada não performática?
+Componente com ChangeDetectionStrategy.Default e com binds com o template com cálculos pesados.
+
+Qual das afirmações a seguir não é um ponto positivo sobre utilizar o async pipe para injetar informação em um componente filho?
+Nenhuma das alternativas.
+
+Qual não é um ponto positivo sobre a estrutura proposta no vídeo?
+Torna a necessidade de shared components inútil.
+
+## Gerenciamento de estado
+
+- Escalabilidade 
+- uma aplicação de TODO interessante 
+- vamos fazer mvc depois melhorar depois usar redux 
+- git clone https://github.com/JGhignatti/jv-state.git 
+- vou tentar seguir ele dessa vez 
+- 
