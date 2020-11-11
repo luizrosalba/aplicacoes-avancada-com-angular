@@ -402,3 +402,27 @@ informação compartilhada
 - create todo deve atualizar a lista do servico 
 - precisamos usar observables para poder trabalhar desta forma atualizando o listservice ao inves de variaveis locais 
 - sempre que a lista for setada todos que estao ouvindo vao ser atualizados 
+- vamos tirar a responsabilidade de fazer o list de cada componente e vamos 
+colocar tudo para o listservice 
+- assim teremos certeza que o listservice será atualizado 
+## Redux 
+- Usaremos o redux para centralizar as informações 
+- ngrx implmentação do redux para angular 
+![](32.PNG)
+
+- store : json grande que guarda o estado da aplicação 
+- usuario logado , estado de loading ... 
+- serve como fonte da verdade 
+- informações centralizadas 
+- componentes apenas consomem a  informação 
+- reducer -> recebe infromações e reduz a uma informacão só 
+- recebe o estado atual e a action , juntando a action e o estado atual gera um novo estado 
+- dado o mesmo input deve gerar o mesmo  output 
+- a store passará a ser a fonte da verdade (antes era o service )
+
+- vamos começar de novo agora usando ngrx 
+
+ng add @ngrx/store@latest
+ng add @ngrx/store-devtools@latest
+ng add @ngrx/effects@latest
+ng add @ngrx/router-store@latest
