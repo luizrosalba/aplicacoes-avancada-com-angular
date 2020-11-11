@@ -380,6 +380,8 @@ export class UserContextService {
 instanciar o servico no componente e usar o metodo set e get
 do servico 
 
+- criamos o servico na mao (nao usamos o angular-cli) e importamos o provide
+dentro do modulo dashboard
 
 
 <div class="greetings">
@@ -392,4 +394,5 @@ do servico
 e o list-component 
 
 - vamos criar um servico dentro do dashboard 
+- esse servico sera acessado pelo list-component que recebera as informações da lista
 - 
