@@ -426,3 +426,5 @@ ng add @ngrx/store@latest
 ng add @ngrx/store-devtools@latest
 ng add @ngrx/effects@latest
 ng add @ngrx/router-store@latest
+
+## Desenvolvendo createReducer e effects
