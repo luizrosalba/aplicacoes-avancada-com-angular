@@ -401,4 +401,4 @@ informação compartilhada
 
 - create todo deve atualizar a lista do servico 
 - precisamos usar observables para poder trabalhar desta forma atualizando o listservice ao inves de variaveis locais 
-
+- sempre que a lista for setada todos que estao ouvindo vao ser atualizados 
