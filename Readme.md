@@ -395,4 +395,10 @@ e o list-component
 
 - vamos criar um servico dentro do dashboard 
 - esse servico sera acessado pelo list-component que recebera as informações da lista
-- 
+- precisamos calcular uma nova pagina 
+- vamos mover o page para dentro do list service pois ele vai ser uma 
+informação compartilhada 
+
+- create todo deve atualizar a lista do servico 
+- precisamos usar observables para poder trabalhar desta forma atualizando o listservice ao inves de variaveis locais 
+
