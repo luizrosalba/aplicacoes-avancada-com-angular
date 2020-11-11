@@ -291,4 +291,55 @@ Torna a necessidade de shared components inútil.
 - vamos fazer mvc depois melhorar depois usar redux 
 - git clone https://github.com/JGhignatti/jv-state.git 
 - vou tentar seguir ele dessa vez 
-- 13:53  
+- Dentro do PAI : Vamos comunicar duas features irmas , filhas de dashboard , last-todo e create-todo. Quando o componente for criado em created-todo  o pai vai perceber atavés de um ViewChild e vai  
+avisar o last-todo
+
+  <!-- create todo e last são irmaos vamos fazer um -->
+  <!-- arco para que se comuniquem  -->
+  <div class="content-1">
+    <jv-last-todos></jv-last-todos>
+  </div>
+
+  <!-- criei o on created para lidar com o output -->
+  <div class="content-2">
+    <jv-create-todo (created)="onCreated($event)"></jv-create-todo>
+  </div>
+  
+  - Quando algo é criado no create todo ele emite um evento 
+
+   @Output() created = new EventEmitter /// emite o evento da criaçaõ 
+  titleControl = new FormControl('');
+
+  save() {
+    this.todoService.create( { title: this.titleControl.value})
+     .subscribe( todo => this. created.emit(todo) ) 
+     /// created todo é irmao do last-todos 
+     /// qual a melhor forma desses componentes se comunicates 
+  }
+
+
+  - Dentro do PAI : O pai está olhando a emissão do evento no create-todo através de um ViewChild que recebe a informação e avisa o last-todo através de uma instancia do LastTodosComponent
+
+  /// recebe e passa a informação para outro child 
+  @ViewChild(LastTodosComponent, {static:false}) lastTodos : LastTodosComponent ;
+
+
+- Dentro do PAI : Enviamos a informação do componente dashboard que tem um método OnCreated 
+
+  onCreated(todo: Todo){
+    this.lastTodos.handleCreated(todo); /// vou agora no last todo precimaos criar esse metodo que recebe esta informação 
+  }
+
+- Dentro do last-todo : REcebemos e manipulamos  a alteração 
+
+  handleCreated (todo:Todo){
+    this.list = [todo, ...this.list];
+  }
+  
+  - Resumo : O filho sofre alteração , emite um evento via output, o pai percebe a emissão deste evento e avisa o outro filho 
+  
+  - Funciona mas é facil perder algum comportamento no meio desta comunicação , exemplo mudar o dashboard, algum movimento do componente . 
+
+  - Vamos usar outros padrões para melhorar isso 
+  
+
