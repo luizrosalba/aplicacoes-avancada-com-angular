@@ -341,5 +341,55 @@ avisar o last-todo
   - Funciona mas é facil perder algum comportamento no meio desta comunicação , exemplo mudar o dashboard, algum movimento do componente . 
 
   - Vamos usar outros padrões para melhorar isso 
-  
+- vamos fazer o login 
+- login components tem a referencia do usuario que não está sendo compartilhando ocm mais nenuhm outro componente 
+- vamos usar um servico para compartilhar informação. Estamos acostumados em usar serviços para requests HTTP , mas esse não é o principal motivo pelo qual existem. 
+- serviços existem para compartilhar a mesma instância de uma classe para mais de um componente ou para outro serviço pai 
 
+- - dois componentes que consomem o mesmo serviço conseguem ver a informação 
+
+- criamos um serviço (user context que injeta no root (aplicação)  a informação do usuario. Ele mantem a informação
+viva apos a morte do componente login de maneira que o usuario 
+possa ser acessado em toda a aplicação 
+```JS 
+import { Injectable } from "@angular/core";
+import { User } from '../models/user.model';
+
+
+/// esse servico vai prover o user para todos que tem acesso ao root
+/// criamos um servico provido na aplicacao inteira 
+//// a informacao eh o usuario logado atualmente 
+/// recebe (todos ) e set (logincomponent)
+@Injectable({ providedIn: 'root' })
+export class UserContextService {
+
+  private _user: User;
+
+  get user(): User {
+    return this._user;
+  }
+
+  set user(value: User) {
+    this._user = value;
+  }
+}
+```
+
+
+- para acessar essa infromação em outro componente, precisamos 
+instanciar o servico no componente e usar o metodo set e get
+do servico 
+
+
+
+<div class="greetings">
+    <h1>Olá, {{ userContext.user.name }}</h1>
+  </div>
+
+
+
+- vamos fazer o mesmo para a lista , vamos compartilhar a lista entre o last-todo 
+e o list-component 
+
+- vamos criar um servico dentro do dashboard 
+- 
