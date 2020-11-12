@@ -490,5 +490,121 @@ Para calcular o novo estado com base no estado atual e a Action disparada.
 - tests.ts 
 - ngtest no componente 
 
+## Implementando e otimizando testes 
+
+- o karma reclama que não há provider para a store 
+- no teste module nao está requisitando a store 
+- ngrx tem funcoes de auxilio 
+- provideMockStore(), prove uma store mock 
+- nao há definicao de estado 
+- o comoponente usa um selector 
+- o providemock permite fazer um override do comportamento dos seletores 
+- da muito trabalho se forem mutios seletores  
+- podemos passar o initialState 
+
+ provideMockStore({ initialState: { list: listInitialState } }),
+
+- precisamos pegar uma referencia para a store 
+ let store: MockStore<any>;
+
+ - injeções que nao sao default do angular pegamos de um jeito diferente 
+
+ store = TestBed.inject(MockStore);
+
+ agora a store está pronta 
+
+ - vamos fazer a validação de quando o carregando está sendo carregado 
+
+```
+ it('should show loading indicator', () => {
+    store.setState({
+      list: {
+        ...listInitialState,
+        loading: true,
+      },
+    });
+    fixture.detectChanges();
+
+    const loading = fixture.debugElement.query(By.css('span'));
+
+    expect(loading).toBeTruthy();
+  });
+
+  ```
+
+  - interessante rxjs jasmine-marbles
+- vamos testar serviços que fazem chamadas http 
+- jv-state-ngrx\src\app\shared\services\json-placeholder.service.ts
+
+- cypress - o melhor para testes e2e 
+- jest - funciona com virtual dom 
+
+Por que precisamos do HttpTestingController ao escrever testes para um serviço que faz chamadas HTTP?
+
+Pois ele nos dá uma interface para aferir a qualidade e os valores esperados tanto passados quanto recebidos pela request.
+
+Por que precisamos de um TestingModule?
+Para facilidade, para não precisar declarar todos os componentes, serviços, etc e suas dependências.
+
+Por que, ao testar os Effects, o TodosService não foi provido de forma convencional?
+Pois como o objetivo dos testes era validar o comportamento dos Effects, não devemos nos importar como os métodos dentro do serviço foram implementados, logo, podemos fazer a definição mais simples dele.
+
+O que um teste unitário pode testar?
+Uma função pura.
+
+Para que serve um teste e2e?
+Para validar o fluxo de uma feature de ponta a ponta.
+
+Para testar Effects nós:
+Criamos Observables mock para a ação disparada e a ação esperada no retorno, então validamos se o resultado do Effect é o Observable que esperávamos receber.
+
+Qual o propósito de ter um beforeEach ou afterEach na definição de um teste?
+Para executar alguma pedaço de código que seja comum entre todos os testes, antes e/
+ou depois de cada um deles ser executado.
+
+O que um teste de integração não pode testar?
+Se o fluxo de uma feature inteira funciona como esperado.
+
+Quando precisamos rodar o change detection de um componente que estamos testando?
+Quando atualizamos alguma informação que é um bind com a View e queremos verificar se ela foi atualizada.
+
+Qual o padrão mostrado ao escrever testes?
+AAA - Arrange, Act, Assert.
+
+
+## Control Value Accessor 
+
+- uma api nao mutio conhecida do angular 
+- age como ponte entre a api de forms do angular e um elemento nativo do DOM 
+- Interage com um formControl, criado explicitamente ou não 
+- typeahead 
+- jv-control-value-accessor
+- vamos transformar o typeahead component em um input usando o control value accessor 
+- conseguimos colocalo dentro de uma diretiva 
+- uma coleção de componentes de ui 
+
+Para que serve o método setDisabledState?
+Nenhuma das alternativas.
+
+Assinale a alternativa incorreta.
+FormControl só existe quando trabalhamos com Reactive Forms.
+
+Para que serve o método registerOnChange?
+Para passar para o componente uma função que pode ser executada para atualizar o FormControl que está sendo injetado nele.
+
+Por que precisamos modificar o comportamento do injetor de dependências para o componente que implementa ControlValueAccessor?
+Para prevenir o Angular de tentar procurar a dependência fora do injetor do componente que implementa o ControlValueAccessor.
+
+Para que serve o método wirteValue?
+Para o componente pai notificar o componente ControlValueAccessor que o FormControl foi atualizado por fora.
+
+Para que serve o método registerOnTouched?
+Para passar para o componente uma função que pode ser executada para marcar o FormControl que está sendo injetado nele como touched.
+
+Por que utilizar ControlValueAccessor?
+Abstrair um comportamento dentro de um componente e que esse componente se comunique diretamente com o FormControl/FormGroup definido no componente pai.
+
+
+
 
 
