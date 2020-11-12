@@ -428,3 +428,48 @@ ng add @ngrx/effects@latest
 ng add @ngrx/router-store@latest
 
 ## Desenvolvendo createReducer e effects
+
+- estamos escrevendo o app.actions e o app.reducer 
+
+- para fazer chamadas e roteamento usamos effects 
+- (side effects de uma action )
+-criamos um app.effects.ts 
+- componente dispara uma action que cai tanto no reducer quanto no effects 
+- o reducer modifica o estado 
+- e o effect nao retorna por enquanto só da um concole log 
+- ok conseguimos pegar a informação através de um servico que chamado por um effect que dispara uma action que dipara um reducer que altera a store. agora precisamos passar isso para o componente usando selector 
+- criamos o app.selectors.ts
+
+Em que ponto o Redux do NgRx se parece com a última implementação do ListService?
+
+A responsabilidade dos componentes é disparar ações e ouvir as mudanças geradas por essas ações.
+
+Ao atualizar o ListService para conter os métodos que servem como interface entre as chamadas HTTP e os componentes, qual se torna a responsabilidade dos componentes?
+Disparar um comando para o ListService e ouvir as mudanças que esse comando gerou.
+
+Qual das seguintes afirmações é verdade sobre a comunicação entre o create-todo component e o last-todos component na primeira solução para gerenciamento de estado mostrada no vídeo (MVC, componentes não compartilham informação, etc)?
+Não é a melhor implementação possível fazer o todo criado ser mandado para o dashboard component, para então ser passado para atualizar a lista no last-todos.
+
+Assinale a alternativa que completa de forma errada a frase "Um Effect pode ___".
+Ser executado sem ser como resposta a uma action disparada.
+
+Para que serve um serviço no Angular?
+Compartilhar informação, dentre outras coisas, entre componentes, diretivas, serviços, etc.
+
+Qual das seguintes afirmações não é um ponto positivo sobre a utilização de seletores?
+Seletores nos possibilitam interceptar novas actions disparadas para selecionar um novo pedaço da Store.
+
+Qual das afirmações é verdadeira sobre compartilhar estado criando uma interface utilizando Observables?
+Possibilita os componentes a ouvir à modificações e reagir a elas.
+
+Qual das seguintes afirmações é verdade sobre a primeira solução para gerenciamento de estado mostrada no vídeo (MVC, componentes não compartilham informação, etc)?
+Como a informação não é persistida acontecem muitos loads ao navegar entre páginas.
+
+Qual o problema encontrado ao criar um novo todo na segunda solução mostrada no vídeo (a que utiliza o ListService)?
+O last-todos component não reage às mudanças do estado da lista que está dentro do ListService.
+
+Para que serve o Reducer do NgRx?
+Para calcular o novo estado com base no estado atual e a Action disparada.
+
+
+
