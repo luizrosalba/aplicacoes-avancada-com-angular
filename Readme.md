@@ -473,3 +473,22 @@ Para calcular o novo estado com base no estado atual e a Action disparada.
 
 
 
+# Introdução à  Testes automatizados 
+
+- unitário : porções individuais de código sem dependência 
+- integração :  componentes , diretivas , serviços com dduas dependencaias , chamadas http , view 
+- teste end to end : e2e fluxo da aplicação e se as ações esperadas e nao esperadas geram estados esperados 
+
+
+## Jasmine e Karma 
+
+- Jasmine  - framework onde o teste é descrito 
+- Karma : Task Runner define o frameword de testes , browser , etc 
+- vou usar o jv-state-ngrx para esta parte de testes (que usa as ultimas implementações que ele fez )
+
+- karmaconfig nao mudamos 
+- tests.ts 
+- ngtest no componente 
+
+
+
