@@ -604,7 +604,244 @@ Para passar para o componente uma função que pode ser executada para marcar o 
 Por que utilizar ControlValueAccessor?
 Abstrair um comportamento dentro de um componente e que esse componente se comunique diretamente com o FormControl/FormGroup definido no componente pai.
 
+## Métodos avançados de manipulação do DOM 
+
+- ng-template não é renderizado na tela automaticamente 
+<ng-template>test 2 </ng-template>
+- mas pode ser manipulado
+<ng-template #template>test 2 </ng-template>
+- podemos usar o viewchild para renderizar o componente 
+- static false diz pro angular pra nao tentar resolver template no ngoninit
+ @ViewChild ('template', {static:false}) template: TemplateRef<any>; 
+- em tempo de execução p angular entende seus componentes como views 
+- viewcontainerref 
+- a classe deve implements AfterViewInit para que possamos renderizar dinamicamente a view do componente
+- dentro do constructor 
+
+``` JS
+constructor (private vcRef:ViewContainerRef){
+}
+  
+ngAfterViewInit(){
+    vcRef.createEmbeddedView(this.template);
+}
+
+```
+- pode ser que nao queiramos que ele seja renderizado assim que a pagina for renderizada 
+
+- podemos por exemplo colar     vcRef.createEmbeddedView(this.template); dentro de um botao que executa uma funcao que vai renderizar este template 
+- para escolher onde o componente vai ser renderizado , precisamos de um outro view container ref 
+- <ng-container></ng-container>
+- tudo que colocamos dentro de ng container será renderizado , mas nao haverá nenhuma referencia dele dentro do HTML 
+- podemos dar um nome pra ele 
+- <ng-container #container ></ng-container>
 
 
+@ViewChild ('container', {static:false,read:ViewContainerRef}) container: ViewContainerRef;
+- Agora podemos escolher onde ele será renderizado  
 
+- o que fizemos é exatamente o que o *ngIf  faz por debaixo dos panos 
+- ele está criando uma diretiva jvIf para simular o que o ngIf faz 
+- agora ele vai fazer um sintatic sugar pra diretiva que ele criou 
+- agora ele vai implementar uma diretiva personalizada tipo o ngfor 
+- *ngTemplateOutlet  -> pega um templateRef pega o viewcontainer e dá append com a informação 
+- ngTemplateOutlet aceita um segundo parametro que é o contexto 
+- dentro deste contexto podemos passar um objeto que vai ser usado na lista que estamos interando 
+- para cada item da lista vamos renderizar um novo template que está sendo definido no componente pai 
+
+``` Js 
+<ng-template let-a="item" #template> 
+{{a}}
+</ngtemplate>
+```
+- o filho recebe um template, recebe um lista itera pela lista e renderiza o template passado 
+- Para ficar melhor ainda poderiamos nem citar qual item está sendo renderizado : 
+
+- bastaria para isso definir $implicit:item no contexto passado para o ngTemplateOutlet  
+
+``` Js 
+<ng-template let-a #template> 
+{{a}}
+</ngtemplate>
+```
+- poderiamos também passar uma funcao como segundo argumento do contexto 
+
+context :{ $implicit:item , func:func }
+
+- daí dentro do filho poderimos escrever uma funcao que será executada no template 
+``` Js 
+<ng-template let-a  let-function="func" #template> 
+
+<div (click)="function(item)" > {{item}} </div>
+</ngtemplate>
+```
+
+
+- acesso ao index do ngfor 
+
+<div *ngFor="let item of list; let index = index; let last=last   "> {{ item }} </div>
+- index, last , list ... todas estas infromações vem do contexto
+
+- Escrevendo nossa diretriva para o ngfor 
+
+```JS 
+import {Directive, Input } from '@angular/core' ; 
+@Directive ({
+  selector: '[jvFor]',
+})
+
+export class JvForDirective implements OnInit {
+  @Input('jvForFrom') list:string[];
+  
+  constructor(private template:TemplateRef<any>, 
+              private vcRef: ViewContainerRef){
+              
+  }
+  ngOnInit(){
+    this.list.forEach( (item,index) => {
+      this.vcRef.createEmeddedView(this.template,{
+        $implicit:item,
+        index,
+        });
+
+    })
+  }
+}
+```
+
+- podemos agora usar nossa diretiva criada 
+- na forma explicita : 
+``` Js 
+<ng-template jvFor [jvForFrom]="list" let-item let-index="index"> 
+  {{item}}
+</ngtemplate>
+```
+- na forma implicita
+``` Js 
+<div *jvFor="let item from list; let index="index"> 
+  {{item}}
+</div>
+```
+
+- outras diretivas : ngSwitch , ngSwitchCase e ngSwitchCaseDefault 
+
+```Js
+
+<div [ngSwitch]="value"> /// valor atual 
+  <div *ngSwitchCase= "'A'"> AAA <div>  /// mostrado quando o valor for A 
+  <div *ngSwitchCase= "'B'"> BBB <div>  /// Mostrado quando o valor for B 
+</div>
+<button (click)="toggle()">Click</button> /// ao clicar ele muda de AAA para BBB e vice versa 
+```
+- ele criou uma lista 
+lista = ['A,'B','C']; 
+- ele criou uma variavel que será A ou B e inicializada como A 
+value = 'A' | 'B' = 'A'
+- agora ele está criando um ngswitchcase personalizado 
+- @Host -> decorator que pede para buscar a referencia somente no container pai 
+- doCheck -> roda sempre que o change detection rodar 
+
+
+- implementacao do jvswtich
+
+![](34.PNG)
+![](35.PNG)
+
+- chamada do jwsitch
+![](33.PNG)
+
+Como foi feita a implementação da comunicação entre a diretiva de Switch e a diretiva de SwitchCase?
+Utilizando injeção de dependência.
+
+Considerando a diretiva ngTemplateOutlet, assinale a alternativa incorreta.
+Nenhuma das alternativas.
+
+O que acontece se a diretiva de SwitchCase for utilizada fora de um elemento com a diretiva Switch?
+Nenhuma das alternativas.
+
+O que é ViewContainerRef?
+Uma referência a um pedaço da View e que é usado para manipular o DOM.
+
+O que é um TemplateRef?
+Uma referência a um template que não é renderizado no DOM, mas que pode ser usado para criar Views dinâmicas.
+
+Assinale a alternativa correta sobre micro sintaxe em diretivas estruturais.
+let define o valor implícito no contexto; a keyword usada na micro sintaxe é retirada do nome do Input.
+
+O que o Angular faz em tempo de execução quando anotamos uma diretiva com asterisco?
+Envolve o elemento em um ng-template.
+
+Por que é interessante aceitarmos como Input em um componente um TemplateRef?
+Aceitar um TemplateRef pode tornar o componente mais genérico, já que quem define o template é o componente pai que o utiliza.
+
+## Injeção de Dependência 
+
+- Padrão de Design 
+- Dependências são serviços ou objetos que uma classe precisa para executar alguam ação 
+- Com DI , a classe pede a dependência de um provedor externo ao invés de intanciar manualmente 
+- Di tem uma estrutura chave (token) - valor 
+![](36.PNG)
+- como registrar uma entrada no injetor de dependencias ? 
+- usamos os providers dentro do @component ou @ngmodule 
+![](37.PNG)
+- quando alguem pedir authService ele vai criar uma nova instancia da classe authservice 
+- Syntax sugar 
+![](38.PNG)
+
+- Injetores: 
+- Fonte responsável por armazenar a estrutura chave/valor dos providers 
+- Instancia classes e injeta a instância nos comonentes que pedem por ela 
+- funcionam de forma hierárquica 
+- 
+![](39.PNG)
+
+- Tokens : Precisam existir em runtime 
+- nao podem ser tipos primitivos, interfaces, funcoes, etc 
+- na mairoia das vezes são classes 
+- podemos criar tokens que nao são classes 
+![](40.PNG)
+
+- Providers : Determinam o valor de um dado token 
+- normalmente inscanciando uma classe 
+- podemos também prover um valor literal usando useValue:'String Example'; 
+- podemos usar um valor já existente : 
+![](41.PNG)
+- outro jeito de definir um provider eh  :
+![](42.PNG)
+- podemos sobrescrever providers . apenas b será provido 
+![](43.PNG)
+- agora o injetctor combina os providers retornando um array com todas as definicoes que tivemos 
+![](44.PNG)
+- exemplos que já usamos : 
+![](45.PNG)
+- Module with Providers uma forma de injetar depencencia estatica tira a responsabilidade de quem consome o modulo de declarar o provider 
+![](46.PNG)
+![](47.PNG)
+
+Qual não é um método válido de declarar um provider?
+Todos os métodos acima são válidos.
+
+Se um injetor não possui um Token que um componente está requisitando ele:
+Passa a responsabilidade para o injetor pai, subindo a cadeia de injetores até achar, se não achar, dispara um erro.
+
+O que é injeção de dependência?
+Uma forma de uma classe receber um valor de um provedor, tal que essa classe não precisa se preocupar com sua inicialização.
+
+Qual dos pontos a seguir não é válido ao utilizar ModuleWithProviders?
+Utilizar a definição passada para o módulo em alguma computação.
+
+Por que conseguimos ter várias definições do RouterModule ou StoreModule dentro da mesma aplicação?
+Pois estes módulos marcam seus providers com multi.
+
+Para que serve um Token?
+São as chaves na estrutura guardada por um injetor.
+
+O que é uma dependência?
+É um serviço ou um objeto que uma classe precisa.
+
+Para que serve o campo Providers em um módulo?
+Para definir uma nova entrada na estrutura que guarda as dependências que o injetor desse módulo pode prover.
+
+Qual dos decorators a seguir não foi mostrado no curso?
+SkipSelf.
 
